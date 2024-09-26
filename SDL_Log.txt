@@ -1,2 +1,0 @@
-Video resolution 1920/1080
-Error 0x80960003 initializing user service.
