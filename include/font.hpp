@@ -27,17 +27,15 @@ namespace font
     {
         public:
             // Loads TTF from font path. Color is specified here because changing SDL_Surface colors over and over is a pain.
-            ttf(const char *fontPath, uint32_t fontColor);
-            ttf(const std::string &fontPath, uint32_t fontColor);
+            ttf(const char *fontPath);
+            ttf(const std::string &fontPath);
             ~ttf();
             // Blits text string at X, Y with font size and color.
-            void renderTextf(int x, int y, int fontSize, const char *format, ...);
+            void renderTextf(int x, int y, int fontSize, uint32_t color, const char *format, ...);
 
         private:
             // Freetype face.
             FT_Face m_FontFace;
-            // Font color
-            uint32_t m_FontColor;
             // Vector buffer for font.
             std::vector<unsigned char> m_FontBuffer;
             // Whether font was successfuly initialized.

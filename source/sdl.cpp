@@ -44,7 +44,7 @@ bool SDL::initialize(void)
     logger::log("Video resolution %i/%i", videoResolution.width, videoResolution.height);
 
     // Try to init SDL
-    int sdlError = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER);
+    int sdlError = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     if (sdlError != 0)
     {
         logger::log("SDL_Init failed.");

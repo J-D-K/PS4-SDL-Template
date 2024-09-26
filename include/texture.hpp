@@ -12,6 +12,8 @@ namespace SDL
             // Creates a texture using surface.
             texture(SDL_Surface *surface);
             ~texture();
+            // Gets the underlying SDL_Texture
+            SDL_Texture *getTexture(void);
             // Renders texture as-is at x, y.
             void renderAt(int x, int y);
 

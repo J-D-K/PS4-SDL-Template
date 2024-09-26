@@ -16,6 +16,11 @@ SDL::texture::~texture()
     SDL_DestroyTexture(m_Texture);
 }
 
+SDL_Texture *SDL::texture::getTexture(void)
+{
+    return m_Texture;
+}
+
 void SDL::texture::renderAt(int x, int y)
 {
     SDL_Rect sourceRect = {0, 0, m_Width, m_Height};

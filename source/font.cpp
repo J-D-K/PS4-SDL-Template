@@ -1,5 +1,6 @@
 #include "font.hpp"
 #include "assetmanager.hpp"
+#include "color.h"
 #include "log.hpp"
 #include "sdl.hpp"
 #include <array>
@@ -16,6 +17,8 @@ namespace
     constexpr uint32_t GREEN_MASK = 0x00FF0000;
     constexpr uint32_t BLUE_MASK = 0x0000FF00;
     constexpr uint32_t ALPHA_MASK = 0x000000FF;
+    // Glyph base color is white so we can use color mod to change colors on the fly.
+    constexpr uint32_t BASE_GLYPH_COLOR = 0xFFFFFF00;
     // Va buffer size for renderTextf
     constexpr int VA_BUFFER_SIZE = 0x1000;
 } // namespace
@@ -44,7 +47,7 @@ void font::exit(void)
     sceSysmoduleUnloadModule(0x009A);
 }
 
-font::ttf::ttf(const char *fontPath, uint32_t fontColor) : m_FontColor(fontColor & 0xFFFFFF00)
+font::ttf::ttf(const char *fontPath)
 {
     // Open font file at the end.
     std::ifstream fontFile(fontPath, std::ios::binary | std::ios::ate);
@@ -70,7 +73,7 @@ font::ttf::ttf(const char *fontPath, uint32_t fontColor) : m_FontColor(fontColor
 }
 
 // This just calls the first constructor using the c_str() of fontPath
-font::ttf::ttf(const std::string &fontPath, uint32_t fontColor) : ttf(fontPath.c_str(), fontColor)
+font::ttf::ttf(const std::string &fontPath) : ttf(fontPath.c_str())
 {
 }
 
@@ -79,7 +82,7 @@ font::ttf::~ttf()
     FT_Done_Face(m_FontFace);
 }
 
-void font::ttf::renderTextf(int x, int y, int fontSize, const char *format, ...)
+void font::ttf::renderTextf(int x, int y, int fontSize, uint32_t color, const char *format, ...)
 {
     if (m_IsInitialized == false)
     {
@@ -110,6 +113,7 @@ void font::ttf::renderTextf(int x, int y, int fontSize, const char *format, ...)
         // Space needs extra handling here. The texture is 0x0, which causes issues with the software rendering.
         if (currentGlyph != NULL && vaBuffer.at(i) != ' ')
         {
+            SDL_SetTextureColorMod(currentGlyph->glyphTexture->getTexture(), GET_RED(color), GET_GREEN(color), GET_BLUE(color));
             currentGlyph->glyphTexture->renderAt(x + currentGlyph->left, y + (fontSize - currentGlyph->top));
             x += currentGlyph->advanceX;
         }
@@ -156,7 +160,7 @@ font::glyphData *font::ttf::getGlyph(char codepoint, int fontSize)
     // Loop and fill surface with pixels.
     for (size_t i = 0; i < bitmapSize; i++)
     {
-        *surfacePixels++ = m_FontColor | *bitmapPixels++;
+        *surfacePixels++ = BASE_GLYPH_COLOR | *bitmapPixels++;
     }
     // Convert to texture and free surface
     // Manager needs identifying string.
